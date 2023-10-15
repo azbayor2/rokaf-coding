@@ -3,15 +3,17 @@
 #include<sys/types.h>
 #include<sys/stat.h>
 #include<fcntl.h>
+#include <stdlib.h>
+#include <string.h>
 #include "hw1.h"
 
 #define MAX_BLOCK_NUM      (1024)
 #define ALLOCATED_SIZE  (7)
 
+int fd =0;
+
 void Init(void)
 {
-    extern int fd;
-
 
 
 }
@@ -39,6 +41,53 @@ int InsertData(char* key, int keySize, char* pBuf, int bufSize)
 
     insertkey[length-2]= length/256;
     insertkey[length-1] = length%256;
+
+    //빈 공간 찾기
+
+
+    unsigned char head_temp[5];
+    int offset =0;
+
+
+    while(1)
+    {
+        lseek(fd, offset, SEEK_SET);
+        read(fd, head_temp, sizeof(head_temp));
+        if(head_temp[0] == FREE_BLOCK)
+        {
+            int temp_length = head_temp[1]*256 + head_temp[2];
+            if(temp_length >= length)
+            {
+                lseek(fd, offset, SEEK_SET);
+                write(fd, insertkey, sizeof(insertkey));
+
+                int leftover = temp_length - length;
+
+                if(leftover==0)
+                    break;
+
+                char leftover_temp[2];
+                leftover_temp[0] = leftover/256;
+                leftover_temp[1] = leftover % 256;
+
+                write(fd, FREE_BLOCK, 1);
+                write(fd, leftover_temp, sizeof(leftover_temp));
+
+                lseek(fd, offset+temp_length-2, SEEK_SET);
+                write(fd, leftover_temp, sizeof(leftover_temp));
+
+
+                break;
+
+                
+
+            }
+        }
+        
+
+    }
+
+    return 0;
 
 
 
@@ -76,7 +125,7 @@ int GetDataByKey(char* key, int keySize, char* pBuf, int bufSize)  //인자: key
         
 
         int temp_keysize = temp_head[3];   //keysize 저장
-        char *temp_key = (char)malloc(temp_keysize+1);     //key 값 동적할당
+        char *temp_key = (char*)malloc(temp_keysize+1);     //key 값 동적할당
         temp_key[temp_keysize] = '\0';
         
         read(fd, temp_key, sizeof(temp_key)-1);    //읽기
@@ -84,7 +133,7 @@ int GetDataByKey(char* key, int keySize, char* pBuf, int bufSize)  //인자: key
         if(strcmp(temp_key, key) ==0)    //문자열이 같을 경우
         {
             int temp_datasize = temp_head[4];
-            char *temp_data = (char)malloc(temp_datasize +1);        //data 값 동적할당
+            char *temp_data = (char*)malloc(temp_datasize +1);        //data 값 동적할당
             temp_data[temp_datasize] = '\0';
 
             read(fd, temp_data, sizeof(temp_data)-1);
@@ -135,7 +184,7 @@ int RemoveDataByKey(char* key, int keySize)
         
 
         int temp_keysize = temp_head[3];   //keysize 저장
-        char *temp_key = (char)malloc(temp_keysize+1);     //key 값 동적할당
+        char *temp_key = (char*)malloc(temp_keysize+1);     //key 값 동적할당
         temp_key[temp_keysize] = '\0';
         
         read(fd, temp_key, sizeof(temp_key)-1);    //읽기
@@ -272,20 +321,22 @@ void InitStorage(void)        //저장소 초기화
 {
     //파일 열기 또는 생성
    
-    if(fd = open(STORAGE_NAME, O_RDWR) < 0 )         
-        if(fd = open(STORAGE_NAME, O_CREAT) < 0)
-            perror("ERROR HANDLING FILE");
+    if(fd = open(STORAGE_NAME,O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR) < 0 )         
+        printf("error");
 
     
     //파일 초기화
 
-    char buf[MAX_STORAGE_SIZE];
-    buf[0] = FREE_BLOCK;
-    buf[1] = (int)MAX_STORAGE_SIZE/256;
-    buf[2] = (int)MAX_STORAGE_SIZE%256;
+    unsigned char buf[MAX_STORAGE_SIZE];
+    buf[0] = (char)FREE_BLOCK;
+    buf[1] = (char)MAX_STORAGE_SIZE/256;
+    buf[2] = (char)MAX_STORAGE_SIZE%256;
 
-    buf[MAX_STORAGE_SIZE-2] = (int)MAX_STORAGE_SIZE/256;
-    buf[MAX_STORAGE_SIZE-1] = (int)MAX_STORAGE_SIZE%256;
+    buf[MAX_STORAGE_SIZE-2] = (char)MAX_STORAGE_SIZE/256;
+    buf[MAX_STORAGE_SIZE-1] = (char)MAX_STORAGE_SIZE%256;
+
+
+    write(fd, buf, sizeof(buf));
 
 
     return;
