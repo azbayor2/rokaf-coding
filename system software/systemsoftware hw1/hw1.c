@@ -18,7 +18,31 @@ void Init(void)
 
 int InsertData(char* key, int keySize, char* pBuf, int bufSize)  
 {
+    int length = ALLOCATED_SIZE + keySize + bufSize;
     
+    unsigned char insertkey[length]; //잠재적 오류
+    insertkey[0] = ALLOC_BLOCK;
+    insertkey[1] = length/256;
+    insertkey[2] = length%256;
+    insertkey[3] = keySize;
+    insertkey[4] = bufSize;
+
+    for(int i =0; i<keySize; i++)
+    {
+        insertkey[5+i] = key[i];
+    }
+
+    for(int i =0; i<bufSize; i++)
+    {
+        insertkey[5+keySize+i] = pBuf[i];
+    }
+
+    insertkey[length-2]= length/256;
+    insertkey[length-1] = length%256;
+
+
+
+
 }
 
 int GetDataByKey(char* key, int keySize, char* pBuf, int bufSize)  //인자: key, key size, data, data size
@@ -206,7 +230,41 @@ int RemoveDataByKey(char* key, int keySize)
 
 int GetBlocks(Block* pBuf, int bufSize)   
 {
-    
+    int num_block =0;
+    int i =0;
+    int offset =0;
+
+    unsigned char head[5];
+    unsigned char tail[2];
+    while(1)
+    {
+        if(offset == MAX_STORAGE_SIZE)
+            break;
+
+        if(i>MAX_BLOCK_NUM)
+            return -1;
+        
+        lseek(fd, offset, SEEK_SET);
+        read(fd, head, sizeof(head));
+        pBuf[i].blockState = head[0];
+        pBuf[i].sizeHead = head[1]*256 + head[2];
+        pBuf[i].keySize = head[3];
+        pBuf[i].dataSize = head[4];
+        pBuf[i].blockOffset = offset;
+
+        lseek(fd, offset+pBuf[i].sizeHead-2, SEEK_SET);
+
+        read(fd, tail, sizeof(tail));
+        pBuf[i].sizeTail = tail[0]*256 + tail[1];
+
+        offset+=pBuf[i].sizeHead;
+        i++;
+
+
+
+    }
+
+    return i;
 
 }
 
