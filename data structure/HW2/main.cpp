@@ -4,7 +4,7 @@
 using namespace std;
 
 
-int calculate()
+void calculate()
 {
     char temp;
     int num;
@@ -38,8 +38,8 @@ int calculate()
                 break;
 
             case MULT: case DIVIDE: case REMAIN:
-                if(oper.top() == PLUS || oper.top() || MINUS || oper.top() == OPEN
-                    || oper.top() == CLOSE || oper.size() ==0)
+                if(oper.size() ==0 || oper.top() == PLUS || oper.top() || MINUS || oper.top() == OPEN
+                    || oper.top() == CLOSE)
                 {
                     oper.push(temp);
                     break;
@@ -47,8 +47,8 @@ int calculate()
 
                 else
                 {
-                    while(oper.top() == POWER || oper.top() == MULT || oper.top() == DIVIDE
-                            || oper.top() == REMAIN)
+                    while(oper.size() != 0 &&( oper.top() == POWER || oper.top() == MULT || oper.top() == DIVIDE
+                            || oper.top() == REMAIN))
                     {
                         t1.push(token(oper.top()));
                         oper.pop();
@@ -66,8 +66,8 @@ int calculate()
                     break;
                 }
 
-                while(oper.top() == PLUS || oper.top() == MINUS || oper.top() == MULT
-                        || oper.top() == DIVIDE || oper.top() == REMAIN || oper.top() == POWER)
+                while(oper.size() != 0 && (oper.top() == PLUS || oper.top() == MINUS || oper.top() == MULT
+                || oper.top() == DIVIDE || oper.top() == REMAIN || oper.top() == POWER))
                 {
                     t1.push(token(oper.top()));
                     oper.pop();
@@ -100,9 +100,6 @@ int calculate()
 
 
     }
-
-    cout << t1.size() << endl;
-
 
 
     while(t1.size()>0)
@@ -140,7 +137,7 @@ int calculate()
                 case DIVIDE:
                     if(right == 0){
                         cout << "error" << endl;
-                        return -1;
+                        return;
                     }
 
                     else
@@ -163,10 +160,13 @@ int calculate()
     }        
 
     if(tempnum.size() ==1)
-        return tempnum.top();
+        cout << tempnum.top() << endl;
 
     else
-        return -1;
+    {
+        cout << "error" << endl;
+        return;
+    }
 }
 
 int main()
@@ -187,7 +187,7 @@ int main()
         else
         {
             cin.putback(input);
-            cout << calculate() << endl;
+            calculate();
         }
     }
 

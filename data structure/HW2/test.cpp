@@ -9,11 +9,13 @@ int main()
 
     token *t = &t1.front();
 
-    cout << t->getnum() << endl;
+    stack<int> t2;
+
+    cout << t2.top() << endl;
+
+   // cout << t->getnum() << endl;
 
     return 0;
-
-
 
 
 }
