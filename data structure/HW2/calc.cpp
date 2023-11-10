@@ -1,6 +1,6 @@
 #include "calc.h"
 
-token::token(int t)
+token::token(double t)
 {
     isdigit = true;
     num =t;
@@ -17,7 +17,7 @@ bool token::get()
     return isdigit;
 }
 
-int token::getnum()
+double token::getnum()
 {
     return num;
 }

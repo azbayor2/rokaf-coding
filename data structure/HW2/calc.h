@@ -17,14 +17,14 @@ class token
 {
 
     public:
-    token(int t);
+    token(double t);
     token(char t);
     bool get();
     char getoper();
-    int getnum();
+    double getnum();
 
     private:
     bool isdigit;
-    int num;
+    double num;
     char oper;
 };
