@@ -3,6 +3,7 @@
         "*.tcc": "cpp",
         "limits": "cpp",
         "type_traits": "cpp",
-        "hw1.h": "c"
+        "hw1.h": "c",
+        "stat.h": "c"
     }
 }

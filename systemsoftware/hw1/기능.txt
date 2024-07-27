@@ -1,0 +1,7 @@
+1. BlockState 구현
+2. 함수 구현
+    -Init()
+    -InitStorage()
+    -InsertData
+    -getDatabyKey()
+    -RemoveDatabyKey()
