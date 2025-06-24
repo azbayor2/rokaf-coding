@@ -10,7 +10,8 @@
 1629: Divide and Conquer
 1644: Sieve of Eratosthenes (에라토스테네스의 체) + Double Pointer
 1647: Kruskal + Binary Search
-1753: Dijkstra
+1753: Dijkstra1
+1764: Map
 1766: Topological Sorting
 1799: Prooning + DFS + Bitmasking
 1916: Dijkstra
@@ -33,5 +34,7 @@
 9663: DFS
 11053: Longest Increasing Sequence
 11404: Dijkstra
+11724: SCC
 11725: DFS
+11726: DFS+DP
 29157: DP + Permat's Little Theorem(페르마의 소정)
