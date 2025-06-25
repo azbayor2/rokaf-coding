@@ -10,6 +10,8 @@ int Root;
 
 int dfs(int cur)
 {
+    if(cur==del_node) return 0;
+
     if(child[cur].size()==0)
         return 1;
 
@@ -25,13 +27,17 @@ int dfs(int cur)
     int ret = 0;
 
     for(int next: child[cur])
-        ret+=dfs(next);
+        if(next!=del_node)
+            ret+=dfs(next);
 
     return ret;
 }
 
 int main()
 {
+    ios::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    
     cin >> N;
     int n;
     for(int i =0; i<N; i++)
@@ -45,8 +51,9 @@ int main()
         child[n].push_back(i);
     }
 
-    cout << dfs(Root) << "\n";
+    cin >> del_node;
 
+    cout << dfs(Root) << "\n";
 
     return 0;
 }
