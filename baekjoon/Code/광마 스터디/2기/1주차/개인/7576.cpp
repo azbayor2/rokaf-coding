@@ -16,7 +16,7 @@ int main()
     ios::sync_with_stdio(0);
     cin.tie(0); cout.tie(0);
 
-    cin >> N >> M;
+    cin >> M >> N;
     for(int i =0; i<N; i++)
         for(int j =0; j<M; j++)
         {
@@ -29,7 +29,7 @@ int main()
                 riped++;
             }
         }
-    
+        
     int ans = 0;
 
     while(q.size()!=0)
