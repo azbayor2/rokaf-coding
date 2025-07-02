@@ -2,20 +2,18 @@
 
 using namespace std;
 
-int arr[11];
-
-
+int arr[11];   //캐시 배열
 
 int dfs(int cur)
 {
-    if(cur<0) return 0;
-    if(cur<=1) return 1;
+    if(cur<0) return 0;    //0보다 작으면 안되므로 0반환
+    if(cur<=1) return 1;    //1, 0이면 더 이상 쪼개질 수 없으므로 1반환
 
     
     int &p = arr[cur];
     if(p!=0) return p;
     
-    return p=dfs(cur-1) + dfs(cur-2) + dfs(cur-3);
+    return p=dfs(cur-1) + dfs(cur-2) + dfs(cur-3);  //경우를 3개로 나누어 개수를 합해줌
 }
 
 int main()
