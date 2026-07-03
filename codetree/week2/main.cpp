@@ -23,6 +23,7 @@ void dfs(int cur, int depth) {
 
     ops[i]--;  // 사용했으므로 1 감소
     switch (i) {
+      
         /** 덧셈 */
       case 0: {
         dfs(cur + arr[depth], depth + 1);
