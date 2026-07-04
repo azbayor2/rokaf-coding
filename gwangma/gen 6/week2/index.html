@@ -1,0 +1,1370 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>연산자 배치하기 발표자료</title>
+    <style>
+      :root {
+        --bg: #edf2f7;
+        --slide: #ffffff;
+        --ink: #111827;
+        --muted: #607089;
+        --line: #d8e0eb;
+        --accent: #1769e0;
+        --accent-dark: #0f4fae;
+        --accent-soft: #eaf2ff;
+        --green: #12805c;
+        --green-soft: #e9f8f1;
+        --amber: #9a5a00;
+        --amber-soft: #fff4dd;
+        --rose: #b42345;
+        --rose-soft: #fff0f3;
+        --code-bg: #101827;
+        --code-ink: #edf4ff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        gap: 14px;
+        padding: 18px;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Arial,
+          sans-serif;
+      }
+
+      .deck {
+        width: min(96vw, 1280px, calc((100vh - 92px) * 16 / 9));
+        aspect-ratio: 16 / 9;
+        position: relative;
+        overflow: hidden;
+        background: var(--slide);
+        border: 1px solid var(--line);
+        box-shadow: 0 18px 48px rgba(17, 24, 39, 0.15);
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        grid-template-rows: auto 1fr;
+        gap: 18px;
+        padding: 38px 48px 34px;
+      }
+
+      .slide.active {
+        display: grid;
+      }
+
+      .title-slide,
+      .closing-slide {
+        grid-template-rows: 1fr;
+        padding: 54px 64px;
+      }
+
+      .title-wrap,
+      .closing-wrap {
+        display: grid;
+        align-content: center;
+        gap: 28px;
+        min-height: 0;
+      }
+
+      .title-mark {
+        display: inline-flex;
+        width: fit-content;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: var(--accent-soft);
+        color: var(--accent-dark);
+        font-size: clamp(15px, 1.1vw, 18px);
+        font-weight: 900;
+      }
+
+      .title-main {
+        font-size: clamp(58px, 7vw, 96px);
+        line-height: 1.14;
+      }
+
+      .title-sub {
+        max-width: 760px;
+        margin: 0;
+        color: var(--muted);
+        font-size: clamp(22px, 2vw, 32px);
+        line-height: 1.45;
+        font-weight: 700;
+      }
+
+      .title-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .title-meta span {
+        padding: 9px 13px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f8fbff;
+        color: var(--muted);
+        font-weight: 900;
+      }
+
+      .slide-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 24px;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 14px;
+      }
+
+      .kicker {
+        margin: 0 0 6px;
+        color: var(--accent);
+        font-size: clamp(16px, 1.1vw, 20px);
+        font-weight: 900;
+        letter-spacing: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        line-height: 1.16;
+        letter-spacing: 0;
+      }
+
+      h1 {
+        font-size: clamp(34px, 4.3vw, 60px);
+      }
+
+      h2 {
+        font-size: clamp(34px, 3.55vw, 54px);
+      }
+
+      h3 {
+        font-size: clamp(22px, 1.75vw, 30px);
+      }
+
+      .tag {
+        flex: 0 0 auto;
+        padding: 8px 12px;
+        border-radius: 7px;
+        background: var(--accent-soft);
+        color: var(--accent-dark);
+        font-size: 15px;
+        font-weight: 900;
+      }
+
+      .source-link {
+        display: inline-block;
+        margin-top: 12px;
+        color: var(--accent);
+        font-size: clamp(13px, 1vw, 16px);
+        font-weight: 900;
+        text-decoration: none;
+        word-break: break-all;
+      }
+
+      .source-link:hover {
+        text-decoration: underline;
+      }
+
+      .content {
+        min-height: 0;
+        display: grid;
+        gap: 18px;
+        align-items: center;
+      }
+
+      .two-col {
+        grid-template-columns: 1.03fr 0.97fr;
+      }
+
+      .two-col.reverse-heavy {
+        grid-template-columns: 0.9fr 1.1fr;
+      }
+
+      .two-col.equal {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: stretch;
+      }
+
+      .image-panel {
+        min-height: 0;
+        height: 100%;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f8fafc;
+        overflow: hidden;
+      }
+
+      .image-panel img {
+        max-width: calc(100% - 2px);
+        max-height: calc(100% - 2px);
+        object-fit: contain;
+        display: block;
+      }
+
+      .image-panel.short {
+        height: auto;
+        min-height: 130px;
+      }
+
+      ul,
+      ol {
+        margin: 0;
+        padding-left: 24px;
+      }
+
+      li {
+        margin: 9px 0;
+        font-size: clamp(19px, 1.55vw, 25px);
+        line-height: 1.4;
+      }
+
+      .compact li {
+        margin: 9px 0;
+        font-size: clamp(17px, 1.25vw, 22px);
+        line-height: 1.34;
+      }
+
+      .lead {
+        margin: 0 0 16px;
+        color: var(--muted);
+        font-size: clamp(20px, 1.8vw, 28px);
+        line-height: 1.45;
+        font-weight: 750;
+      }
+
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+      }
+
+      .limits-board {
+        display: grid;
+        grid-template-columns: 1.08fr 0.92fr;
+        gap: 18px;
+        height: 100%;
+        align-items: stretch;
+      }
+
+      .limits-board .metric-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        height: 100%;
+      }
+
+      .metric,
+      .note,
+      .algo-card,
+      .visual-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfcfe;
+      }
+
+      .metric {
+        padding: 18px 16px;
+        text-align: center;
+        display: grid;
+        align-content: center;
+      }
+
+      .metric strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--accent);
+        font-size: clamp(34px, 3vw, 48px);
+      }
+
+      .metric span {
+        color: var(--muted);
+        font-size: clamp(17px, 1.25vw, 22px);
+        font-weight: 800;
+      }
+
+      .limit-judgement {
+        padding: 26px 28px;
+        display: grid;
+        align-content: center;
+        gap: 22px;
+        background: #f8fbff;
+      }
+
+      .formula-card {
+        padding: 22px;
+        border-radius: 8px;
+        background: var(--accent-soft);
+        color: var(--accent-dark);
+      }
+
+      .formula-card strong {
+        display: block;
+        font-size: clamp(48px, 4.8vw, 76px);
+        line-height: 1.14;
+      }
+
+      .formula-card span {
+        display: block;
+        margin-top: 10px;
+        font-size: clamp(18px, 1.45vw, 24px);
+        font-weight: 900;
+      }
+
+      .note {
+        padding: 18px 20px;
+      }
+
+      .note h3 {
+        margin-bottom: 10px;
+      }
+
+      .note p {
+        margin: 0;
+        color: var(--muted);
+        font-size: clamp(19px, 1.45vw, 24px);
+        line-height: 1.42;
+        font-weight: 650;
+      }
+
+      .equal .note {
+        height: 100%;
+        display: grid;
+        align-content: start;
+      }
+
+      .algo-layout {
+        display: grid;
+        grid-template-columns: 0.95fr 1.05fr;
+        gap: 18px;
+        align-items: stretch;
+        height: 100%;
+      }
+
+      .operator-board {
+        padding: 22px;
+        display: grid;
+        align-content: center;
+        gap: 24px;
+        background: linear-gradient(180deg, #f8fbff, #f3f7fc);
+      }
+
+      .number-row,
+      .slot-row {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 8px;
+        align-items: center;
+      }
+
+      .num,
+      .slot {
+        min-height: 58px;
+        display: grid;
+        place-items: center;
+        border-radius: 8px;
+        font-size: clamp(19px, 1.8vw, 28px);
+        font-weight: 950;
+      }
+
+      .num {
+        background: #fff;
+        border: 1px solid var(--line);
+      }
+
+      .slot {
+        background: var(--accent-soft);
+        color: var(--accent-dark);
+        border: 1px dashed #89b7ff;
+      }
+
+      .slot-label {
+        color: var(--muted);
+        text-align: center;
+        font-size: clamp(17px, 1.3vw, 22px);
+        font-weight: 850;
+      }
+
+      .algo-stack {
+        display: grid;
+        gap: 12px;
+      }
+
+      .algo-card {
+        padding: 18px 20px;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 14px;
+        align-items: center;
+      }
+
+      .algo-icon {
+        width: 54px;
+        height: 54px;
+        display: grid;
+        place-items: center;
+        border-radius: 8px;
+        background: var(--accent-soft);
+        color: var(--accent-dark);
+        font-size: 24px;
+        font-weight: 950;
+      }
+
+      .algo-card p {
+        margin: 5px 0 0;
+        color: var(--muted);
+        font-size: clamp(16px, 1.15vw, 19px);
+        line-height: 1.36;
+        font-weight: 650;
+      }
+
+      .reason-grid,
+      .alternative-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        align-items: stretch;
+        height: 100%;
+      }
+
+      .reason-grid .note,
+      .alternative-grid .note {
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        gap: 10px;
+        padding: 26px 28px;
+      }
+
+      .reason-grid .note:first-child {
+        background: var(--green-soft);
+      }
+
+      .reason-grid .note:last-child {
+        background: var(--accent-soft);
+      }
+
+      .alternative-grid .note:first-child {
+        background: var(--amber-soft);
+      }
+
+      .alternative-grid .note:last-child {
+        background: var(--rose-soft);
+      }
+
+      .proof-line,
+      .state-mini,
+      .decision-strip {
+        align-self: end;
+        margin-top: 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(23, 105, 224, 0.18);
+        background: rgba(255, 255, 255, 0.58);
+      }
+
+      .proof-line {
+        padding: 18px 20px;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 16px;
+        align-items: baseline;
+      }
+
+      .proof-line strong {
+        color: var(--accent-dark);
+        font-size: clamp(44px, 4vw, 64px);
+        line-height: 1.14;
+      }
+
+      .proof-line span {
+        color: var(--muted);
+        font-size: clamp(20px, 1.5vw, 26px);
+        font-weight: 900;
+      }
+
+      .state-mini {
+        padding: 16px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+
+      .state-mini span {
+        padding: 14px 10px;
+        border-radius: 8px;
+        background: #fff;
+        color: var(--accent-dark);
+        text-align: center;
+        font-size: clamp(20px, 1.6vw, 28px);
+        font-weight: 950;
+      }
+
+      .decision-strip {
+        padding: 18px 20px;
+        color: var(--ink);
+        font-size: clamp(22px, 1.8vw, 30px);
+        font-weight: 950;
+      }
+
+      .design-board {
+        display: grid;
+        grid-template-columns: 0.8fr 1.2fr;
+        gap: 18px;
+        align-items: stretch;
+        height: 100%;
+      }
+
+      .state-card {
+        padding: 22px;
+        display: grid;
+        align-content: stretch;
+        gap: 14px;
+        background: #f8fbff;
+      }
+
+      .state-line {
+        padding: 18px 18px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        font-size: clamp(21px, 1.65vw, 28px);
+        font-weight: 900;
+      }
+
+      .state-line code {
+        color: var(--accent-dark);
+      }
+
+      .flow-lane {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .flow-step {
+        position: relative;
+        display: grid;
+        align-content: center;
+        justify-items: start;
+        gap: 10px;
+        padding: 18px 34px 18px 20px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfcfe;
+        min-height: 118px;
+      }
+
+      .flow-step strong {
+        color: var(--accent);
+        font-size: clamp(24px, 2vw, 34px);
+        font-weight: 950;
+      }
+
+      .flow-step span {
+        font-size: clamp(20px, 1.55vw, 26px);
+        line-height: 1.32;
+        font-weight: 850;
+      }
+
+      .flow-step::after {
+        content: "→";
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--accent);
+        font-size: 24px;
+        font-weight: 950;
+      }
+
+      .flow-step:nth-child(3)::after,
+      .flow-step:nth-child(6)::after {
+        content: "";
+      }
+
+      .code-result-layout {
+        grid-template-columns: 1.32fr 0.68fr;
+        align-items: stretch;
+      }
+
+      .code-columns {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        height: 100%;
+      }
+
+      pre {
+        margin: 0;
+        min-height: 0;
+        overflow: hidden;
+        padding: 12px;
+        border-radius: 8px;
+        background: var(--code-bg);
+        color: var(--code-ink);
+        font-size: clamp(12px, 0.7vw, 11px);
+        line-height: 1.17;
+        tab-size: 2;
+        white-space: pre-wrap;
+      }
+
+      code {
+        font-family:
+          "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      }
+
+      .result-stack {
+        height: 100%;
+        display: grid;
+        grid-template-rows: 1fr auto;
+        gap: 12px;
+        min-height: 0;
+      }
+
+      .result-stack .image-panel {
+        min-height: 190px;
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .pill {
+        padding: 8px 10px;
+        border-radius: 7px;
+        background: var(--accent-soft);
+        color: var(--accent-dark);
+        font-size: clamp(13px, 1vw, 16px);
+        font-weight: 900;
+      }
+
+      .pitfall-layout {
+        grid-template-columns: 1.18fr 0.82fr;
+        align-items: stretch;
+      }
+
+      .pitfall-grid {
+        display: grid;
+        grid-template-rows: repeat(3, 1fr);
+        gap: 12px;
+        height: 100%;
+      }
+
+      .pitfall-card {
+        padding: 18px 20px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: #fbfcfe;
+        display: grid;
+        align-content: center;
+        gap: 7px;
+      }
+
+      .pitfall-card strong {
+        color: var(--accent-dark);
+        font-size: clamp(19px, 1.45vw, 24px);
+      }
+
+      .pitfall-card span {
+        color: var(--muted);
+        font-size: clamp(16px, 1.15vw, 19px);
+        line-height: 1.35;
+        font-weight: 700;
+      }
+
+      .mistake-side {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        gap: 12px;
+        min-height: 0;
+      }
+
+      .mistake-side .note {
+        background: #f8fbff;
+      }
+
+      .thanks {
+        font-size: clamp(64px, 8vw, 112px);
+        line-height: 1.14;
+      }
+
+      .question-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        max-width: 920px;
+      }
+
+      .question-grid .note {
+        min-height: 120px;
+        display: grid;
+        align-content: center;
+      }
+
+      .emphasis {
+        color: var(--green);
+        font-weight: 950;
+      }
+
+      .warning {
+        color: var(--amber);
+        font-weight: 950;
+      }
+
+      .controls {
+        width: min(96vw, 1280px);
+        display: grid;
+        grid-template-columns: auto 1fr auto auto auto;
+        gap: 10px;
+        align-items: center;
+      }
+
+      button {
+        min-width: 44px;
+        min-height: 40px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: #fff;
+        color: var(--ink);
+        font: inherit;
+        font-weight: 850;
+        cursor: pointer;
+      }
+
+      button:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .progress-wrap {
+        height: 10px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #dbe3ee;
+      }
+
+      .progress-bar {
+        width: 0;
+        height: 100%;
+        background: var(--accent);
+        transition: width 180ms ease;
+      }
+
+      .counter {
+        min-width: 82px;
+        text-align: center;
+        color: var(--muted);
+        font-weight: 900;
+      }
+
+      .fullscreen .deck {
+        width: min(100vw, calc(100vh * 16 / 9));
+        height: min(100vh, calc(100vw * 9 / 16));
+        aspect-ratio: 16 / 9;
+        border: 0;
+        box-shadow: none;
+      }
+
+      body.fullscreen {
+        padding: 0;
+        gap: 0;
+        overflow: hidden;
+      }
+
+      .fullscreen .controls {
+        display: none;
+      }
+
+      @media (max-width: 820px) {
+        body {
+          padding: 8px;
+        }
+
+        .slide {
+          padding: 24px 24px 28px;
+          gap: 12px;
+        }
+
+        .two-col,
+        .two-col.reverse-heavy,
+        .two-col.equal,
+        .algo-layout,
+        .reason-grid,
+        .alternative-grid,
+        .design-board,
+        .code-result-layout,
+        .pitfall-layout,
+        .question-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .metric-grid,
+        .flow-lane {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="deck" id="deck" aria-live="polite">
+      <section class="slide active title-slide">
+        <div class="title-wrap">
+          <div class="title-mark">Codetree Samsung SW</div>
+          <div>
+            <h1 class="title-main">연산자 배치하기</h1>
+            <p class="title-sub">
+              문제 분석, 알고리즘 선택, 설계 흐름 중심 풀이
+            </p>
+          </div>
+          <div class="title-meta">
+            <span>DFS</span>
+            <span>Backtracking</span>
+            <span>Brute Force</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <header class="slide-header">
+          <div>
+            <p class="kicker">1. 문제 소개: 문제 상황</p>
+            <h2>숫자 사이에 연산자 배치</h2>
+          </div>
+          <div class="tag">Problem</div>
+        </header>
+        <div class="content two-col">
+          <div>
+            <p class="lead">
+              주어진 숫자 사이에 연산자를 배치하고, 가능한 식의 최솟값과 최댓값
+              탐색
+            </p>
+            <ul>
+              <li>
+                연산자 종류: <strong>+</strong>, <strong>-</strong>,
+                <strong>*</strong>
+              </li>
+              <li>각 연산자의 사용 횟수 고정</li>
+              <li><strong>n개의 숫자 순서 변경 불가</strong></li>
+              <li>
+                연산자 우선순위 없이 <strong>앞에서부터 차례대로 계산</strong>
+              </li>
+            </ul>
+            <a
+              class="source-link"
+              href="https://www.codetree.ai/ko/frequent-problems/samsung-sw/problems/arrange-operator/description"
+              target="_blank"
+              rel="noreferrer"
+              >문제 링크: Codetree 연산자 배치하기</a
+            >
+          </div>
+          <figure class="image-panel">
+            <img
+              src="source/문제사진.png"
+              alt="연산자 배치하기 문제 설명 화면"
+              loading="eager"
+              decoding="sync"
+              fetchpriority="high"
+            />
+          </figure>
+        </div>
+      </section>
+
+      <section class="slide">
+        <header class="slide-header">
+          <div>
+            <p class="kicker">2. 문제 소개: 예제로 이해하기</p>
+            <h2>같은 숫자, 다른 배치, 다른 결과</h2>
+          </div>
+          <div class="tag">Example</div>
+        </header>
+        <div class="content two-col reverse-heavy">
+          <figure class="image-panel">
+            <img src="source/입력 예제.png" alt="입력 예제 화면" />
+          </figure>
+          <div>
+            <ul>
+              <li>숫자의 순서는 고정</li>
+              <li>변하는 것은 숫자 사이의 <strong>연산자 순서</strong></li>
+              <li><strong>곱셈 우선순위 미적용, 앞에서부터 계산</strong></li>
+              <li>모든 배치를 확인해야 최솟값과 최댓값 누락 방지</li>
+            </ul>
+            <div class="note">
+              <h3>핵심 관찰</h3>
+              <p>연산자 개수는 같아도 배치 순서에 따라 누적 계산값 변화</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <header class="slide-header">
+          <div>
+            <p class="kicker">3. 문제 분석: 제한 조건</p>
+            <h2>입력 크기로 탐색 가능성 판단</h2>
+          </div>
+          <div class="tag">Limits</div>
+        </header>
+        <div class="content limits-board">
+          <div class="metric-grid">
+            <div class="metric">
+              <strong>2 ≤ n ≤ 11</strong><span>숫자 개수</span>
+            </div>
+            <div class="metric">
+              <strong>1 ~ 100</strong><span>각 숫자 범위</span>
+            </div>
+            <div class="metric"><strong>1초</strong><span>시간 제한</span></div>
+            <div class="metric">
+              <strong>80MiB</strong><span>메모리 제한</span>
+            </div>
+          </div>
+          <div class="note limit-judgement">
+            <div class="formula-card">
+              <strong>n - 1 ≤ 10</strong>
+              <span>배치해야 할 연산자 개수</span>
+            </div>
+            <h3>판단</h3>
+            <p>
+              입력 크기가 작고, 연산자 자리도 최대 10개. 모든 연산자 배치를
+              확인하는 완전탐색 고려 가능
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <header class="slide-header">
+          <div>
+            <p class="kicker">4. 사용한 알고리즘</p>
+            <h2>배치를 전부 만들고, 한 경로씩 탐색</h2>
+          </div>
+          <div class="tag">Algorithm</div>
+        </header>
+        <div class="content algo-layout">
+          <div class="visual-card operator-board">
+            <div class="number-row">
+              <div class="num">a₁</div>
+              <div class="slot">?</div>
+              <div class="num">a₂</div>
+              <div class="slot">?</div>
+              <div class="num">a₃</div>
+              <div class="slot">...</div>
+            </div>
+            <div class="slot-label">각 빈칸에 +, -, * 중 하나 선택</div>
+            <div class="number-row">
+              <div class="slot">+</div>
+              <div class="slot">-</div>
+              <div class="slot">*</div>
+              <div class="slot">+</div>
+              <div class="slot">...</div>
+              <div class="slot">끝</div>
+            </div>
+          </div>
+          <div class="algo-stack">
+            <article class="algo-card">
+              <div class="algo-icon">BF</div>
+              <div>
+                <h3>Brute Force</h3>
+                <p>가능한 연산자 배치를 모두 확인</p>
+              </div>
+            </article>
+            <article class="algo-card">
+              <div class="algo-icon">DFS</div>
+              <div>
+                <h3>DFS, 재귀 방식</h3>
+                <p>첫 연산자 자리부터 깊게 내려가며 누적 계산</p>
+              </div>
+            </article>
+            <article class="algo-card">
+              <div class="algo-icon">BT</div>
+              <div>
+                <h3>Backtracking</h3>
+                <p>선택한 연산자 개수를 줄이고, 재귀 후 원상복구</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <header class="slide-header">
+          <div>
+            <p class="kicker">5. 사용한 이유</p>
+            <h2>작은 탐색 공간과 단순한 상태</h2>
+          </div>
+          <div class="tag">Why</div>
+        </header>
+        <div class="content reason-grid">
+          <div class="note">
+            <h3>Brute Force 가능</h3>
+            <ul class="compact">
+              <li>연산자 최대 10개</li>
+              <li>각 자리마다 최대 3가지 선택</li>
+              <li>
+                상한: <strong>3<sup>10</sup> = 59,049</strong>
+              </li>
+              <li>대략 <strong>81 * 81 * 9 &lt; 100 * 100 * 10</strong></li>
+              <li>100,000 미만, 1초 기준 충분</li>
+              <li>연산자 사용 횟수 제한으로 실제 경우의 수는 더 적음</li>
+            </ul>
+            <div class="proof-line">
+              <strong>59,049</strong>
+              <span>최악 상한도 충분히 작음</span>
+            </div>
+          </div>
+          <div class="note">
+            <h3>DFS / Backtracking 적합</h3>
+            <ul class="compact">
+              <li>첫 번째 연산자부터 하나씩 대입하는 구조</li>
+              <li>상태: 현재 계산값, 깊이, 남은 연산자 개수</li>
+              <li>재귀 깊이 최대 10~11, 메모리 부담 작음</li>
+              <li>문제의 계산 순서와 구현 흐름이 거의 동일</li>
+              <li>구현하기 쉬운 방식이라는 판단</li>
+            </ul>
+            <div class="state-mini">
+              <span>cur</span>
+              <span>depth</span>
+              <span>ops</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <header class="slide-header">
+          <div>
+            <p class="kicker">6. 사용하지 않은 알고리즘과 이유</p>
+            <h2>BFS와 DP를 선택하지 않은 이유</h2>
+          </div>
+          <div class="tag">Alternatives</div>
+        </header>
+        <div class="content alternative-grid">
+          <div class="note">
+            <h3>BFS</h3>
+            <ul class="compact">
+              <li>연산자의 사용 가능 횟수 고정</li>
+              <li>각 상태마다 연산자 사용 현황 관리 필요</li>
+              <li>큐에 중간 상태 저장</li>
+              <li>
+                단순 계산으로도 <strong>100,000 * 10</strong> 정도의 상태 관리
+              </li>
+              <li>메모리 한도 안이지만 DFS 대비 이점 작음</li>
+              <li>최단거리 문제가 아니라 BFS 장점 약함</li>
+            </ul>
+            <div class="decision-strip">
+              중간 상태를 많이 들고 갈 이유가 약함
+            </div>
+          </div>
+          <div class="note">
+            <h3>DP</h3>
+            <ul class="compact">
+              <li>더 작은 문제와 관계식 필요</li>
+              <li>누적 계산값과 남은 연산자 개수가 상태에 포함</li>
+              <li>점화식과 상태 관리 복잡</li>
+              <li>입력 크기가 작아 완전탐색이 더 빠르고 단순</li>
+              <li>작은 입력에서는 빠르게 푸는 것이 더 중요하다는 판단</li>
+            </ul>
+            <div class="decision-strip">상태 압축보다 완전탐색이 단순</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <header class="slide-header">
+          <div>
+            <p class="kicker">7. 설계 흐름</p>
+            <h2>선택 → 감소 → 계산 → 재귀 → 복구</h2>
+          </div>
+          <div class="tag">Design</div>
+        </header>
+        <div class="content design-board">
+          <div class="visual-card state-card">
+            <div>
+              <h3>상태 정의</h3>
+            </div>
+            <div class="state-line"><code>cur</code> 현재까지 계산값</div>
+            <div class="state-line"><code>depth</code> 다음 숫자 위치</div>
+            <div class="state-line"><code>ops</code> 남은 연산자 개수</div>
+            <div class="note">
+              <h3>종료 조건</h3>
+              <p><code>depth == N</code>이면 최솟값과 최댓값 갱신</p>
+            </div>
+          </div>
+          <div class="flow-lane">
+            <div class="flow-step">
+              <strong>1</strong><span>사용할 연산자 선택</span>
+            </div>
+            <div class="flow-step">
+              <strong>2</strong><span>현재 값과 다음 숫자 계산</span>
+            </div>
+            <div class="flow-step">
+              <strong>3</strong><span>남은 연산자 개수 감소</span>
+            </div>
+            <div class="flow-step">
+              <strong>4</strong><span>다음 깊이로 재귀 호출</span>
+            </div>
+            <div class="flow-step">
+              <strong>5</strong><span>연산자 개수 원상복구</span>
+            </div>
+            <div class="flow-step">
+              <strong>6</strong><span>다른 연산자로 반복</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <header class="slide-header">
+          <div>
+            <p class="kicker">8. 코드와 결과</p>
+            <h2>작성 코드 전체와 채점 결과</h2>
+          </div>
+          <div class="tag">Code</div>
+        </header>
+        <div class="content code-result-layout">
+          <div class="code-columns">
+            <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int min_ans = 1 &lt;&lt; 30;     // 최솟값 저장
+int max_ans = -(1 &lt;&lt; 30);  // 최댓값 저장
+int N;                     // 배열의 길이
+int ops[4];                // 연산자 (+,-,* 순으로)
+int arr[12];               // 입력된 수열을 저장
+
+/** cur: 현재까지 계산된 값   depth: 현재 탐색하는 깊이 */
+void dfs(int cur, int depth) {
+  /** 만약에 탐색이 끝났으면 정답 갱신 */
+  if (depth == N) {
+    min_ans = min(min_ans, cur);
+    max_ans = max(max_ans, cur);
+    return;
+  }
+
+  /** 다음 노드 탐색 */
+  for (int i = 0; i &lt; 3; i++) {
+    /** 현재 선택한 연산자의
+        남은 횟수가 없으면 넘어감 */
+    if (ops[i] == 0) continue;
+
+    ops[i]--;  // 사용했으므로 1 감소
+                switch (i) {
+      /** 덧셈 */
+      case 0: {
+        dfs(cur + arr[depth], depth + 1);
+        break;
+      }
+
+      /** 뺄셈 */
+      case 1: {
+        dfs(cur - arr[depth], depth + 1);
+        break;
+      }
+
+      /** 곱셈 */
+      case 2: {
+        dfs(cur * arr[depth], depth + 1);
+        break;
+      }
+    }
+
+    /** 재귀 호출이 끝나면
+        사용한 연산자 원상 복구 */
+    ops[i]++;
+  }
+}
+</code></pre>
+            <pre><code>
+int main() {
+  /** 입력 처리 */
+  cin &gt;&gt; N;
+  for (int i = 0; i &lt; N; i++) cin &gt;&gt; arr[i];
+  for (int i = 0; i &lt; 3; i++) cin &gt;&gt; ops[i];
+
+  dfs(arr[0], 1);
+
+  cout &lt;&lt; min_ans &lt;&lt; " " &lt;&lt; max_ans &lt;&lt; "\n";
+  return 0;
+}</code></pre>
+          </div>
+          <div class="result-stack">
+            <figure class="image-panel">
+              <img src="source/채점결과.png" alt="채점 결과 화면" />
+            </figure>
+            <div class="note">
+              <h3>결과</h3>
+              <div class="pill-row">
+                <span class="pill">2ms</span>
+                <span class="pill">C++20</span>
+                <span class="pill">정답</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <header class="slide-header">
+          <div>
+            <p class="kicker">9. 풀면서 조심해야 했던 지점</p>
+            <h2>실수 가능 지점 먼저 체크</h2>
+          </div>
+          <div class="tag">Check</div>
+        </header>
+        <div class="content pitfall-layout">
+          <div class="pitfall-grid">
+            <div class="pitfall-card">
+              <strong>재귀 시작 조건</strong>
+              <span
+                >연산에는 두 숫자가 필요. 첫 숫자를 <code>cur</code>로 넣고
+                <code>dfs(arr[0], 1)</code>에서 시작</span
+              >
+            </div>
+            <div class="pitfall-card">
+              <strong>백트래킹 복구</strong>
+              <span
+                >재귀 호출 뒤 <code>ops[i]++</code>로 사용한 연산자 개수
+                원상복구</span
+              >
+            </div>
+            <div class="pitfall-card">
+              <strong>최댓값 / 최솟값 초기화</strong>
+              <span
+                >최댓값은 충분히 작은 값, 최솟값은 충분히 큰 값. 가능한 탐색
+                결과 범위 밖으로 설정</span
+              >
+            </div>
+          </div>
+          <div class="mistake-side">
+            <figure class="image-panel short">
+              <img
+                src="source/처음에 실수한것.png"
+                alt="처음에 실수한 코드 화면"
+              />
+            </figure>
+            <div class="note">
+              <h3>내가 실제로 한 실수</h3>
+              <p>
+                연산자 입력을 숫자 개수 <code>N</code>만큼 받으려 했던 부분.
+                연산자 종류는 <strong>+, -, *</strong> 세 개이므로
+                <span class="warning">3번 입력</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide closing-slide">
+        <div class="closing-wrap">
+          <div class="title-mark">Wrap-up</div>
+          <h2 class="thanks">감사합니다</h2>
+          <p class="title-sub">질문이나 다른 접근 방식 이야기 환영</p>
+          <div class="question-grid">
+            <div class="note">
+              <h3>완전탐색 판단</h3>
+              <p>입력 크기와 경우의 수</p>
+            </div>
+            <div class="note">
+              <h3>DFS 설계</h3>
+              <p>상태와 종료 조건</p>
+            </div>
+            <div class="note">
+              <h3>실수 포인트</h3>
+              <p>입력, 복구, 초기값</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="controls" aria-label="슬라이드 조작">
+      <button type="button" id="prev" aria-label="이전 슬라이드">←</button>
+      <div class="progress-wrap" aria-hidden="true">
+        <div class="progress-bar" id="progress"></div>
+      </div>
+      <span class="counter" id="counter">1 / 11</span>
+      <button type="button" id="next" aria-label="다음 슬라이드">→</button>
+      <button type="button" id="fullscreen" aria-label="전체화면">
+        전체화면
+      </button>
+    </nav>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const counter = document.getElementById("counter");
+      const progress = document.getElementById("progress");
+      const prevButton = document.getElementById("prev");
+      const nextButton = document.getElementById("next");
+      const fullscreenButton = document.getElementById("fullscreen");
+      let current = 0;
+
+      function showSlide(index) {
+        current = Math.max(0, Math.min(index, slides.length - 1));
+        slides.forEach((slide, slideIndex) => {
+          slide.classList.toggle("active", slideIndex === current);
+        });
+        counter.textContent = `${current + 1} / ${slides.length}`;
+        progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+        prevButton.disabled = current === 0;
+        nextButton.disabled = current === slides.length - 1;
+      }
+
+      function go(delta) {
+        showSlide(current + delta);
+      }
+
+      async function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          await document.documentElement.requestFullscreen();
+        } else {
+          await document.exitFullscreen();
+        }
+      }
+
+      prevButton.addEventListener("click", () => go(-1));
+      nextButton.addEventListener("click", () => go(1));
+      fullscreenButton.addEventListener("click", toggleFullscreen);
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowLeft") go(-1);
+        if (event.key === "ArrowRight" || event.key === " ") {
+          event.preventDefault();
+          go(1);
+        }
+        if (event.key === "Home") showSlide(0);
+        if (event.key === "End") showSlide(slides.length - 1);
+      });
+
+      document.addEventListener("fullscreenchange", () => {
+        document.body.classList.toggle(
+          "fullscreen",
+          Boolean(document.fullscreenElement),
+        );
+        fullscreenButton.textContent = document.fullscreenElement
+          ? "나가기"
+          : "전체화면";
+      });
+
+      showSlide(0);
+    </script>
+  </body>
+</html>
